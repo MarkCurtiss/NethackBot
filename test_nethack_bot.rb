@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require 'test/unit'
-require 'ftools'
 require 'nethack_bot.rb'
 
 

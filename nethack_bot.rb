@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'logger'
+require 'fileutils'
 require 'player.rb'
 require 'twitter_account.rb'
 
@@ -10,7 +11,7 @@ class NethackBot
   @@logName = @@logDir + 'nethack_bot.log'
 
   def initialize(configFile) 
-    File.mkpath(@@logDir)
+    FileUtils.mkpath(@@logDir)
  
     File.open(configFile, 'r').each { |line|
       line.chomp!

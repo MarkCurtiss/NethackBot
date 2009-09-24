@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'open-uri'
-require 'ftools'
+require 'fileutils'
 
 class Player
   attr_accessor :name 
@@ -9,7 +9,7 @@ class Player
   
   def initialize(name)
     @name = name
-    File.mkpath(@@gamesDir)
+    FileUtils.mkpath(@@gamesDir)
   end
 
   def url
@@ -26,7 +26,7 @@ class Player
     currentGames = []
     
     open(self.url) { |page_content|
-      page_content.string.scan(/http.*userdata\/.*dumplog.*.txt/) { |url_string|
+      page_content.read.scan(/http.*userdata\/.*dumplog.*.txt/) { |url_string|
         currentGames = url_string.split(/href/).map { |url|
           url[/http:.*txt/]
         }

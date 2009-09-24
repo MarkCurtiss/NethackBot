@@ -13,6 +13,9 @@ class PlayerTest < Test::Unit::TestCase
   def teardown
     testPlayer = Player.new(@@playerName)
     File.unlink(testPlayer.gamesFile) if File.exists?(testPlayer.gamesFile)
+
+    hugePlayer = Player.new('graa')
+    File.unlink(hugePlayer.gamesFile) if File.exists?(hugePlayer.gamesFile)
   end
   
   def test_url
@@ -31,6 +34,11 @@ class PlayerTest < Test::Unit::TestCase
         'http://alt.org/nethack/userdata/nbTest/dumplog/1252731025.nh343.txt',
         'http://alt.org/nethack/userdata/nbTest/dumplog/1252731049.nh343.txt'
     ], testPlayer.newGames);
+  end
+ 
+  def test_handles_large_webpages
+  	testPlayer = Player.new('graa')
+	assert(testPlayer.newGames)
   end
 
   def test_serialize_game
