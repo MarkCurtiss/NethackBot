@@ -1,7 +1,9 @@
 #!/usr/bin/env ruby
 
 require 'test/unit'
+require 'ftools'
 require 'nethack_bot.rb'
+
 
 class NethackBotTest < Test::Unit::TestCase
   @@configFileName = '~.nethack_bot_test'

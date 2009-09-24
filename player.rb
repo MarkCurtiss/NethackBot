@@ -1,13 +1,15 @@
 #!/usr/bin/env ruby
 
 require 'open-uri'
-require 'yaml'
+require 'ftools'
 
 class Player
   attr_accessor :name 
+  @@gamesDir = Dir.pwd + '/games/'
   
   def initialize(name)
     @name = name
+    File.mkpath(@@gamesDir)
   end
 
   def url
@@ -15,7 +17,7 @@ class Player
   end
 
   def gamesFile
-    "/Users/markcurtiss/nethack_bot/#{@name}.games"
+    @@gamesDir + "#{@name}.games"
   end
   
   def newGames

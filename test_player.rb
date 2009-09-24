@@ -22,7 +22,7 @@ class PlayerTest < Test::Unit::TestCase
 
   def test_games_file
     testPlayer = Player.new(@@playerName)
-    assert_equal('/Users/markcurtiss/nethack_bot/nbTest.games', testPlayer.gamesFile)
+    assert_equal(Dir.pwd + '/games/nbTest.games', testPlayer.gamesFile)
   end
 
   def test_new_games

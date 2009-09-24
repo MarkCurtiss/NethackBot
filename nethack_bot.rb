@@ -6,9 +6,12 @@ require 'twitter_account.rb'
 
 class NethackBot
   attr_accessor :players, :twitterName, :twitterPassword, :twitterAccount, :logger
-  @@logName = File.dirname(__FILE__) + '/logs/nethack_bot.log'
+  @@logDir = Dir.pwd + '/logs/'
+  @@logName = @@logDir + 'nethack_bot.log'
 
-  def initialize(configFile)
+  def initialize(configFile) 
+    File.mkpath(@@logDir)
+ 
     File.open(configFile, 'r').each { |line|
       line.chomp!
       attribute, values = line.split('=')
