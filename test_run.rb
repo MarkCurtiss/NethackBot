@@ -13,7 +13,7 @@ require 'player.rb'
 #watched alt.org players and die, then see if the Twitter account was updated.
 
 class NethackBotTestRun < Test::Unit::TestCase
-  @@configFileName = '~.nethack_bot_test_run'
+  @@configFileName = File.expand_path('~/.nethack_bot_test_run')
   @@players = ['nbTest', 'cultofluna']
 
   def teardown

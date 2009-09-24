@@ -44,7 +44,7 @@ class NethackBot
 end
 
 if __FILE__ == $0 
-  configFileName = ARGV[0] || '~.nethack_bot'
+  configFileName = ARGV[0] || File.expand_path('~/.nethack_bot')
   nethackBot = NethackBot.new(configFileName)
   nethackBot.run
 end
