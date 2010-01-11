@@ -32,13 +32,15 @@ class PlayerTest < Test::Unit::TestCase
     testPlayer = Player.new(@@playerName)
     assert_equal([
         'http://alt.org/nethack/userdata/nbTest/dumplog/1252731025.nh343.txt',
-        'http://alt.org/nethack/userdata/nbTest/dumplog/1252731049.nh343.txt'
+	'http://alt.org/nethack/userdata/nbTest/dumplog/1263170714.nh343.txt',
+        'http://alt.org/nethack/userdata/nbTest/dumplog/1252731049.nh343.txt',
+	'http://alt.org/nethack/userdata/nbTest/dumplog/1263170828.nh343.txt',
     ], testPlayer.newGames);
   end
  
   def test_handles_large_webpages
   	testPlayer = Player.new('graa')
-	assert(testPlayer.newGames)
+        assert(testPlayer.newGames)
   end
 
   def test_serialize_game
@@ -48,7 +50,7 @@ class PlayerTest < Test::Unit::TestCase
     testPlayer.serializeGame(game)
 
     assert_equal(
-      "http://alt.org/nethack/userdata/nbTest/dumplog/1252731049.nh343.txt\n",
+      "http://alt.org/nethack/userdata/nbTest/dumplog/1263170714.nh343.txt\n",
       File.open(testPlayer.gamesFile).gets 
     )
   end
@@ -57,12 +59,12 @@ class PlayerTest < Test::Unit::TestCase
     testPlayer = Player.new(@@playerName)
 
     games = testPlayer.newGames
-    assert_equal(2, testPlayer.newGames.size)
+    assert_equal(4, testPlayer.newGames.size)
     
     testPlayer.serializeGame(games[1])
-    assert_equal(1, testPlayer.newGames.size)
+    assert_equal(3, testPlayer.newGames.size)
 
     testPlayer.serializeGame(games[0])
-    assert_equal(0, testPlayer.newGames.size)
+    assert_equal(2, testPlayer.newGames.size)
   end
 end

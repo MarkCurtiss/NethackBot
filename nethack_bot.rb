@@ -34,7 +34,11 @@ class NethackBot
 
       player.newGames.each { |newGame|
         logger.debug("posting update for #{player.name}'s game #{newGame}")
-        postedToTwitterSuccessfully = self.twitterAccount.update("#{player.name.upcase} DIED! #{newGame}")
+
+	tinyGameLogUrl = getTinyUrl(newGame)
+	deathMetadata = getDeathMetadata(newGame, player.name)
+
+        postedToTwitterSuccessfully = self.twitterAccount.update("#{player.name.upcase} the #{deathMetadata[0]} died. Lvl: #{deathMetadata[1]}. Killer: #{deathMetadata[2]}. #{tinyGameLogUrl}")
         logger.debug("successfully posted to twitter?: #{postedToTwitterSuccessfully}")
         player.serializeGame(newGame) if postedToTwitterSuccessfully
       }
@@ -42,6 +46,29 @@ class NethackBot
     
     self.logger.info('done!')
   end
+
+  def getDeathMetadata(gameLogUrl, playerName)
+     commandString = '/usr/bin/curl ' + gameLogUrl
+     rawLog = `#{commandString}`
+
+     deathMetadata = Array.new     
+
+     rawLog =~ /#{playerName} the (.*).../
+     deathMetadata << $1 ? $1 : 'unknown'
+
+     rawLog =~ /^You were level (.*) with a maximum/
+     deathMetadata << $1 ? $1 : 'unknown'
+
+     rawLog =~ /^Killer: (.*)/
+     deathMetadata << $1 ? $1 : 'unknown'
+
+     return deathMetadata
+  end
+  
+  def getTinyUrl(gameLogUrl)
+     return open('http://tinyurl.com/api-create.php?url=' + gameLogUrl, "UserAgent" => "Ruby-Wget").read
+  end
+
 end
 
 if __FILE__ == $0 

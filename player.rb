@@ -19,7 +19,7 @@ class Player
   def gamesFile
     @@gamesDir + "#{@name}.games"
   end
-  
+
   def newGames
     oldGames = File.exists?(self.gamesFile) ?  File.open(self.gamesFile, "r").readlines : []
     oldGames.each { |game| game.chomp! }
