@@ -67,4 +67,14 @@ class PlayerTest < Test::Unit::TestCase
     testPlayer.serializeGame(games[0])
     assert_equal(2, testPlayer.newGames.size)
   end
+  
+  def test_set_url
+    testPlayer = Player.new(@@playerName)
+
+    assert_equal(testPlayer.url(), 'http://alt.org/nethack/dumplogs.php?player=nbTest')
+
+    testPlayer.setUrl('http://scottwainstock.com/nethackbot/userdata/rtkfan16/dumplog/')
+
+    assert_equal(testPlayer.url(), 'http://scottwainstock.com/nethackbot/userdata/rtkfan16/dumplog/')
+  end
 end
