@@ -38,8 +38,6 @@ class NethackBot
 	tinyGameLogUrl = getTinyUrl(newGame)
 	deathMetadata = getDeathMetadata(newGame, player.name)
 
-	next unless deathMetadata[0] && deathMetadata[1] && deathMetadata[2]
-
         postedToTwitterSuccessfully = self.twitterAccount.update("#{player.name.upcase} the #{deathMetadata[0]} died. Lvl: #{deathMetadata[1]}. Killer: #{deathMetadata[2]}. #{tinyGameLogUrl}")
         logger.debug("successfully posted to twitter?: #{postedToTwitterSuccessfully}")
         player.serializeGame(newGame) if postedToTwitterSuccessfully
