@@ -70,9 +70,3 @@ class NethackBot
   end
 
 end
-
-if __FILE__ == $0 
-  configFileName = ARGV[0] || File.expand_path('~/.nethack_bot')
-  nethackBot = NethackBot.new(configFileName)
-  nethackBot.run
-end

@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby 
+
+require 'fileutils.rb'
+require 'nethack_bot.rb'
+
+configFileName = ARGV[0] || File.expand_path('~/.nethack_bot')
+nethackBot = NethackBot.new(configFileName)
+nethackBot.run

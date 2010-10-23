@@ -22,5 +22,5 @@ end
 
 desc 'Runs the nethack bot [default]'
 task :run do |t|
-  ruby '-I lib bin/nethack_bot.rb'
+  ruby '-I lib bin/run'
 end

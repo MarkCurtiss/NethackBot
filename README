@@ -1,3 +1,3 @@
-to test if nethack bot will work on your system, run ./test_run.rb; it will actually post to a test twitter account (http://twitter.com/twnbtest) for a couple of dummy accounts. 
+to test if nethack bot will work on your system, run rake test:sanity; it will actually post to a test twitter account (http://twitter.com/twnbtest) for a couple of dummy accounts. 
 
-to actually run it, use ./nethack_bot.rb. However, first you will need to edit ~/.nethack_bot to contain the usernames you want to follow on nethack.alt.org, and the twitter credentials for whatever twitter account you're going to tie this too.  you can look at test_nethack_bot.rb in the test test_reads_dot_nethack_bot_file_in_homedir_for_configuration for a sample config file.
+to actually run it, use rake run. However, first you will need to edit ~/.nethack_bot to contain the usernames you want to follow on nethack.alt.org, and the twitter credentials for whatever twitter account you're going to tie this too.  you can look at test/test_nethack_bot.rb in test_reads_dot_nethack_bot_file_in_homedir_for_configuration for a sample config file.
