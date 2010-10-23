@@ -4,6 +4,7 @@ require 'test/unit'
 require 'net/http'
 require 'rexml/document'
 require 'nethack_bot.rb'
+require 'player.rb'
 
 class NethackBotTest < Test::Unit::TestCase
   @@configFileName = '.nethack_bot_test'

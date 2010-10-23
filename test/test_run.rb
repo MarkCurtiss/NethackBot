@@ -2,6 +2,7 @@
 
 require 'test/unit'
 require 'player.rb'
+require 'nethack_bot.rb'
 
 #this test actually posts to a twitter account.  for this reason, it is not included
 #as part of the test suite.  it's intended to be used a sanity check to see if NethackBot
@@ -31,8 +32,7 @@ class NethackBotTestRun < Test::Unit::TestCase
       file.puts('twitterPassword=dgdoc3vdcv')
     }
 
-    output = `./nethack_bot.rb #{@@configFileName}`
-    puts(output)
+    NethackBot.new(@@configFileName).run
 
     @@players.each { |playerName|
       player = Player.new(playerName)
