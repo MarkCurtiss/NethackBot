@@ -1,7 +1,4 @@
-#!/usr/bin/env ruby
-
-require 'test/unit'
-require 'player.rb'
+require 'helper'
 
 #All tests in this TestCase are using the player nbTest.  This is because that player has a few dummy games setup
 #on alt.org specifically for testing (http://alt.org/nethack/dumplogs.php?player=nbTest).  If you change the playername, 

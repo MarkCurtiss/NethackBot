@@ -1,5 +1,3 @@
-#!/usr/bin/env ruby
-
 class TwitterAccount
   attr_accessor :userName, :password
 

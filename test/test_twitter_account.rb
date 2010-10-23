@@ -1,7 +1,4 @@
-#!/usr/bin/env ruby
-
-require 'test/unit'
-require 'twitter_account.rb'
+require 'helper'
 
 class TwitterAccountTest < Test::Unit::TestCase
   def test_update_comand

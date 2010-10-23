@@ -1,11 +1,9 @@
-#!/usr/bin/env ruby
-
 require 'open-uri'
 require 'fileutils'
 
 class Player
   attr_accessor :name 
-  @@gamesDir = Dir.pwd + '/games/'
+  @@gamesDir = Dir.pwd + (ENV['TEST_DIR'] || '') + '/games/'
   
   def initialize(name)
     @name = name

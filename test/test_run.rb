@@ -1,8 +1,4 @@
-#!/usr/bin/env ruby
-
-require 'test/unit'
-require 'player.rb'
-require 'nethack_bot.rb'
+require 'helper'
 
 #this test actually posts to a twitter account.  for this reason, it is not included
 #as part of the test suite.  it's intended to be used a sanity check to see if NethackBot

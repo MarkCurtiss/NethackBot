@@ -1,13 +1,11 @@
-#!/usr/bin/env ruby
-
 require 'logger'
 require 'fileutils'
-require 'player.rb'
-require 'twitter_account.rb'
+require 'player'
+require 'twitter_account'
 
 class NethackBot
   attr_accessor :players, :twitterName, :twitterPassword, :twitterAccount, :logger
-  @@logDir = Dir.pwd + '/logs/'
+  @@logDir = Dir.pwd + (ENV['TEST_DIR'] || '') + '/logs/'
   @@logName = @@logDir + 'nethack_bot.log'
 
   def initialize(configFile) 

@@ -1,10 +1,6 @@
-#!/usr/bin/env ruby
-
-require 'test/unit'
+require 'helper'
 require 'net/http'
 require 'rexml/document'
-require 'nethack_bot.rb'
-require 'player.rb'
 
 class NethackBotTest < Test::Unit::TestCase
   @@configFileName = '.nethack_bot_test'
