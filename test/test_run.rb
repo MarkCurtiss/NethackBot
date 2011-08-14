@@ -24,8 +24,10 @@ class NethackBotTestRun < Test::Unit::TestCase
   def test_run
     File.open(@@configFileName, 'w') { |file|
       file.puts('players=nbTest,cultofluna')
-      file.puts('twitterName=twnbtest')
-      file.puts('twitterPassword=dgdoc3vdcv')
+      file.puts('consumer_key=dTYnNFT5dcmj9yXGMdtw')
+      file.puts('consumer_secret=D2OmfcdMaBkKQMtzeTUmHWIXZdXbmndLPjjZY0PdA')
+      file.puts('oauth_token=75188583-pNrTjuTjQE6b8TPK03WN7S0t1PoIqkPxw8zuD3DRc')
+      file.puts('oauth_token_secret=nc6Y4vSRLAA2vd1G82zjmnS7iUHRgJ7YbB9IZew')
     }
 
     NethackBot.new(@@configFileName).run

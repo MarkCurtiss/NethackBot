@@ -1,52 +1,65 @@
 require 'helper'
-require 'net/http'
-require 'rexml/document'
 
 class NethackBotTest < Test::Unit::TestCase
   @@configFileName = '.nethack_bot_test'
-  @@twitterName = 'sswtestnb' 
-  @@twitterPass = 'testPassword' 
-  @@playerName = 'nbTest' 
+  @@twitterName = 'sswtestnb'
+  @@twitterPass = 'testPassword'
+  @@playerName = 'nbTest'
   @@playerGameFile = Dir.pwd + '/games/' + @@playerName + '.games'
-  
+
   def teardown
     File.unlink(@@playerGameFile) if File.exists?(@@playerGameFile)
     File.unlink(@@configFileName) if File.exists?(@@configFileName)
   end
 
-  def test_updates_twitter_account_with_correct_message
+  def test_status_update
     File.open(@@configFileName, 'w') { |file|
-      file.puts('players=' + @@playerName + ',whydoineedthis')
-      file.puts('twitterName=sswtestnb')
-      file.puts('twitterPassword=testPassword')
+      file.puts('players=' + @@playerName + ',bug')
     }
 
-    player1 = Player.new(@@playerName)
-
-    twitterAccount = TwitterAccount.new(@@twitterName, @@twitterPass)
     testBot = NethackBot.new(@@configFileName)
-    testBot.run()
 
-    doc = REXML::Document.new(Net::HTTP.get_response(URI.parse("http://twitter.com/users/show/" + @@twitterName + ".xml")).body)
+    twitterClient = testBot.twitterAccount
 
-    assert_equal('NBTEST the Healer died. Lvl: 1. Killer: sewer rat. http://tinyurl.com/yz88vt7', doc.root.text('status/text'))
+    #okay, maybe it's time to switch to rspec
+    twitterClient.instance_variable_set(:@statusUpdates, [])
+    def twitterClient.update(status)
+      @statusUpdates.push(status)
+    end
+
+    testBot.run
+
+    assert_equal('NBTEST the Healer died. Lvl: 1. Killer: sewer rat. http://tinyurl.com/2g43rz3',
+                 twitterClient.instance_variable_get(:@statusUpdates).last)
   end
-  
+
   def test_reads_dot_nethack_bot_file_in_homedir_for_configuration
     File.open(@@configFileName, 'w') { |file|
       file.puts('players=testPlayer1,testPlayer2')
-      file.puts('twitterName=testAccount')
-      file.puts('twitterPassword=testPassword')
+      file.puts('consumer_key=test_key')
+      file.puts('consumer_secret=test_secret')
+      file.puts('oauth_token=test_token')
+      file.puts('oauth_token_secret=test_token_secret')
     }
 
     testBot = NethackBot.new(@@configFileName)
 
     player1 = Player.new('testPlayer1')
     player2 = Player.new('testPlayer2')
-    twitterAccount = TwitterAccount.new('testAccount', 'testPassword')
+
+    Twitter.configure do |config|
+      config.consumer_key = 'test_key'
+      config.consumer_secret = 'test_secret'
+      config.oauth_token = 'test_token'
+      config.oauth_token_secret = 'test_token_secret'
+    end
+
+    twitterAccount = Twitter.new
 
     assert_equal([player1, player2].map { |x| x.name }, testBot.players.map { |y| y.name });
-    assert_equal(twitterAccount.userName, testBot.twitterAccount.userName)
-    assert_equal(twitterAccount.password, testBot.twitterAccount.password)
+    assert_equal(twitterAccount.consumer_key, testBot.twitterAccount.consumer_key)
+    assert_equal(twitterAccount.consumer_secret, testBot.twitterAccount.consumer_secret)
+    assert_equal(twitterAccount.oauth_token, testBot.twitterAccount.oauth_token)
+    assert_equal(twitterAccount.oauth_token_secret, testBot.twitterAccount.oauth_token_secret)
   end
 end
