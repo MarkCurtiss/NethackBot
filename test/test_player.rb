@@ -22,16 +22,16 @@ class PlayerTest < Test::Unit::TestCase
 
   def test_games_file
     testPlayer = Player.new(@@playerName)
-    assert_equal(Dir.pwd + '/games/nbTest.games', testPlayer.gamesFile)
+    assert_equal(Dir.pwd + '/test/games/nbTest.games', testPlayer.gamesFile)
   end
 
   def test_new_games
     testPlayer = Player.new(@@playerName)
     assert_equal([
-        'http://alt.org/nethack/userdata/nbTest/dumplog/1252731025.nh343.txt',
-	'http://alt.org/nethack/userdata/nbTest/dumplog/1263170714.nh343.txt',
-        'http://alt.org/nethack/userdata/nbTest/dumplog/1252731049.nh343.txt',
-	'http://alt.org/nethack/userdata/nbTest/dumplog/1263170828.nh343.txt',
+      'http://alt.org/nethack/userdata/n/nbTest/dumplog/1252731025.nh343.txt',
+      'http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170714.nh343.txt',
+      'http://alt.org/nethack/userdata/n/nbTest/dumplog/1252731049.nh343.txt',
+      'http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170828.nh343.txt',
     ], testPlayer.newGames);
   end
  
@@ -47,7 +47,7 @@ class PlayerTest < Test::Unit::TestCase
     testPlayer.serializeGame(game)
 
     assert_equal(
-      "http://alt.org/nethack/userdata/nbTest/dumplog/1263170714.nh343.txt\n",
+      "http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170714.nh343.txt\n",
       File.open(testPlayer.gamesFile).gets 
     )
   end
