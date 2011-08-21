@@ -57,7 +57,7 @@ class NethackBot
   end
 
   def getDeathMetadata(gameLogUrl, playerName)
-     commandString = '/usr/bin/curl ' + gameLogUrl
+     commandString = '/usr/bin/curl --silent ' + gameLogUrl
      rawLog = `#{commandString}`
 
      deathMetadata = Array.new     
