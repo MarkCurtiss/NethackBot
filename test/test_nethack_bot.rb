@@ -5,7 +5,7 @@ class NethackBotTest < Test::Unit::TestCase
   @@twitterName = 'sswtestnb'
   @@twitterPass = 'testPassword'
   @@playerName = 'nbTest'
-  @@playerGameFile = Dir.pwd + '/games/' + @@playerName + '.games'
+  @@playerGameFile = Dir.pwd + (ENV['TEST_DIR'] || '') + '/games/' + @@playerName + '.games'
 
   def teardown
     File.unlink(@@playerGameFile) if File.exists?(@@playerGameFile)
