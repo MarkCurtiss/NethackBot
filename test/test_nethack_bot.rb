@@ -62,4 +62,14 @@ class NethackBotTest < Test::Unit::TestCase
     assert_equal(twitterAccount.oauth_token, testBot.twitterAccount.oauth_token)
     assert_equal(twitterAccount.oauth_token_secret, testBot.twitterAccount.oauth_token_secret)
   end
+
+  def test_get_death_metadata_handles_non_ascii_characters
+    File.open(@@configFileName, 'w') { |file|
+      file.puts('players=' + @@playerName + ',bug')
+    }
+
+    testBot = NethackBot.new(@@configFileName, :silent => true)
+    testBot.getDeathMetadata('http://alt.org/nethack/userdata/t/thebuckley/dumplog/1252117582.nh343.txt', 'thebuckley')
+  end
+
 end

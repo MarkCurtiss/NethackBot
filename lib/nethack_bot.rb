@@ -58,9 +58,9 @@ class NethackBot
 
   def getDeathMetadata(gameLogUrl, playerName)
      commandString = '/usr/bin/curl --silent ' + gameLogUrl
-     rawLog = `#{commandString}`
+     rawLog = `#{commandString}`.encode('ASCII', :invalid => :replace)
 
-     deathMetadata = Array.new     
+     deathMetadata = Array.new
 
      rawLog =~ /#{playerName} the (.*).../
      deathMetadata << $1 ? $1 : 'unknown'
