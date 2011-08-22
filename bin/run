@@ -4,5 +4,6 @@ require 'fileutils.rb'
 require 'nethack_bot.rb'
 
 configFileName = ARGV[0] || File.expand_path('~/.nethack_bot')
-nethackBot = NethackBot.new(configFileName)
+silentMode = ARGV[1] || false
+nethackBot = NethackBot.new(configFileName, :silent => silentMode)
 nethackBot.run

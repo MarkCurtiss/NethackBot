@@ -33,6 +33,25 @@ class NethackBotTest < Test::Unit::TestCase
                  twitterClient.instance_variable_get(:@statusUpdates).last)
   end
 
+  def test_silent_option_logs_games_but_doesnt_tweet
+    File.open(@@configFileName, 'w') { |file|
+      file.puts('players=' + @@playerName + ',bug')
+    }
+
+    testBot = NethackBot.new(@@configFileName, :silent => true)
+
+    twitterClient = testBot.twitterAccount
+
+    twitterClient.instance_variable_set(:@was_called, false)
+    def twitterClient.update(status)
+      @was_called = true
+    end
+
+    testBot.run
+
+    assert_equal(false, twitterClient.instance_variable_get(:@was_called));
+  end
+
   def test_reads_dot_nethack_bot_file_in_homedir_for_configuration
     File.open(@@configFileName, 'w') { |file|
       file.puts('players=testPlayer1,testPlayer2')
