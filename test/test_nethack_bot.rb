@@ -13,7 +13,7 @@ class NethackBotTest < Test::Unit::TestCase
     File.unlink(@@configFileName)    if File.exists?(@@configFileName)
   end
 
-  def writeTestConfigFile(players = [ @@playerName, 'bug'])
+  def writeTestConfigFile(players = [ @@playerName ])
     File.open(@@configFileName, 'w') { |file|
       file.puts('players=' + players.join(','))
     }

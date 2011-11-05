@@ -24,7 +24,9 @@ class NethackBot
       self.send("#{attribute}=", values) if self.respond_to?("#{attribute}")
     }
 
+    @players = [ @players ].flatten #convert string to an array in case we only have one player
     @players.map! { |playerName| Player.new(playerName) }
+
     @logger = Logger.new(@@logName, 'daily')
     @logger.datetime_format = "%Y-%m-%d %H:%M:%S "
 
