@@ -3,11 +3,11 @@ require 'fileutils'
 
 class Player
   attr_accessor :name 
-  @@gamesDir = Dir.pwd + (ENV['TEST_DIR'] || '') + '/games/'
+  GAMES_DIR = Dir.pwd + (ENV['TEST_DIR'] || '') + '/games/'
   
   def initialize(name)
     @name = name
-    FileUtils.mkpath(@@gamesDir)
+    FileUtils.mkpath(GAMES_DIR)
   end
 
   def url
@@ -15,7 +15,7 @@ class Player
   end
 
   def gamesFile
-    @@gamesDir + "#{@name}.games"
+    GAMES_DIR + "#{@name}.games"
   end
 
   def oldGames

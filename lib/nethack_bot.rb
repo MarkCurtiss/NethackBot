@@ -24,9 +24,9 @@ class NethackBot
       self.send("#{attribute}=", values) if self.respond_to?("#{attribute}")
     }
 
-    self.players.map! { |playerName| Player.new(playerName) }
-    self.logger = Logger.new(@@logName, 'daily')
-    self.logger.datetime_format = "%Y-%m-%d %H:%M:%S "
+    @players.map! { |playerName| Player.new(playerName) }
+    @logger = Logger.new(@@logName, 'daily')
+    @logger.datetime_format = "%Y-%m-%d %H:%M:%S "
 
     unless (@silent)
       Twitter.configure do |config|
@@ -35,39 +35,41 @@ class NethackBot
         config.oauth_token = self.oauth_token
         config.oauth_token_secret = self.oauth_token_secret
       end
-      self.twitterAccount = Twitter.new
+      @twitterAccount = Twitter.new
     end
   end
 
   def run()
-    self.logger.info('starting...')
-    self.logger.info("running in #{@silent ? 'silent' : 'normal'} mode")
+    @logger.info('starting...')
+    @logger.info("running in #{@silent ? 'silent' : 'normal'} mode")
 
-    self.players.each { |player|
+    @players.each { |player|
       playerIsNew = player.new? #performance hack so we don't keep re-reading the player's games file as we loop over their new games
       if (playerIsNew)
-        self.logger.debug("#{player.name} is new - their games will be logged but not posted to twitter")
+        @logger.debug("#{player.name} is new - their games will be logged but not posted to twitter")
       else
-        self.logger.debug("#{player.name} already exists - their new games will be posted to twitter")
+        @logger.debug("#{player.name} already exists - their new games will be posted to twitter")
       end
+
+      @logger.debug("looking for games for #{player.name}...")
 
       player.newGames.each { |newGame|
         deathMetadata = getDeathMetadata(newGame, player.name)
 
         if (@silent || playerIsNew)
-          self.logger.debug("logging #{player.name}'s game #{newGame}")
+          @logger.debug("logging #{player.name}'s game #{newGame}")
           player.serializeGame(newGame)
         else
-          self.logger.debug("posting update for #{player.name}'s game #{newGame}")
+          @logger.debug("posting update for #{player.name}'s game #{newGame}")
           tinyGameLogUrl = getTinyUrl(newGame)
-          postedToTwitterSuccessfully = ! self.twitterAccount.update(self.statusUpdate(player, tinyGameLogUrl, deathMetadata)).nil?
-          self.logger.debug("successfully posted to twitter?: #{postedToTwitterSuccessfully}")
+          postedToTwitterSuccessfully = ! @twitterAccount.update(self.statusUpdate(player, tinyGameLogUrl, deathMetadata)).nil?
+          @logger.debug("successfully posted to twitter?: #{postedToTwitterSuccessfully}")
           player.serializeGame(newGame) if postedToTwitterSuccessfully
         end
       }
     }
 
-    self.logger.info('done!')
+    @logger.info('done!')
   end
 
   def statusUpdate(player, url, deathMetadata)

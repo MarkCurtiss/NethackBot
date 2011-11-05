@@ -2,11 +2,10 @@ require 'helper'
 
 class NethackBotTest < Test::Unit::TestCase
   @@configFileName = '.nethack_bot_test'
-  @@gamesPath = Dir.pwd + (ENV['TEST_DIR'] || '') + '/games/'
   @@playerName = 'nbTest'
-  @@playerGameFile = @@gamesPath + @@playerName + '.games'
+  @@playerGameFile = Player::GAMES_DIR + @@playerName + '.games'
   @@newPlayerName = 'cultofluna'
-  @@newPlayerGameFile = @@gamesPath + @@newPlayerName + '.games'
+  @@newPlayerGameFile = Player::GAMES_DIR + @@newPlayerName + '.games'
 
   def teardown
     File.unlink(@@playerGameFile)    if File.exists?(@@playerGameFile)
