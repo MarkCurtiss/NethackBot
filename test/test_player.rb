@@ -34,6 +34,14 @@ class PlayerTest < Test::Unit::TestCase
       'http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170828.nh343.txt',
     ], testPlayer.newGames);
   end
+
+  def test_old_games
+    testPlayer = Player.new(@@playerName)
+    game = testPlayer.newGames.first
+    testPlayer.serializeGame(game)
+
+    assert_equal([ game ], testPlayer.oldGames)
+  end
  
   def test_handles_large_webpages
   	testPlayer = Player.new('graa')

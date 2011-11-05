@@ -52,6 +52,12 @@ class NethackBotTest < Test::Unit::TestCase
     testBot.run
 
     assert_equal(false, twitterClient.instance_variable_get(:@was_called));
+    assert_equal([
+      "http://alt.org/nethack/userdata/n/nbTest/dumplog/1252731025.nh343.txt",
+      "http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170714.nh343.txt",
+      "http://alt.org/nethack/userdata/n/nbTest/dumplog/1252731049.nh343.txt",
+      "http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170828.nh343.txt",
+    ], Player.new(@@playerName).oldGames)
   end
 
   def test_reads_dot_nethack_bot_file_in_homedir_for_configuration

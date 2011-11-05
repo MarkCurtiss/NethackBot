@@ -18,9 +18,12 @@ class Player
     @@gamesDir + "#{@name}.games"
   end
 
-  def newGames
+  def oldGames
     oldGames = File.exists?(self.gamesFile) ?  File.open(self.gamesFile, "r").readlines : []
     oldGames.each { |game| game.chomp! }
+  end
+
+  def newGames
     currentGames = []
     
     open(self.url) { |page_content|
@@ -31,7 +34,7 @@ class Player
       }
     }
 
-    newGames = currentGames - oldGames
+    newGames = currentGames - self.oldGames
   end
 
   def serializeGame(game)
