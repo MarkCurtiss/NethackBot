@@ -37,7 +37,7 @@ class PlayerTest < Test::Unit::TestCase
  
   def test_handles_large_webpages
   	testPlayer = Player.new('graa')
-        assert(testPlayer.newGames)
+    assert(testPlayer.newGames)
   end
 
   def test_serialize_game

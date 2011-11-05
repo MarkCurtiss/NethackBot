@@ -29,8 +29,10 @@ class NethackBotTest < Test::Unit::TestCase
 
     testBot.run
 
-    assert_equal('NBTEST the Healer died. Lvl: 1. Killer: sewer rat. http://tinyurl.com/2g43rz3',
-                 twitterClient.instance_variable_get(:@statusUpdates).last)
+    assert_equal(
+      'NBTEST the Healer died. Lvl: 1. Killer: sewer rat. http://tinyurl.com/2g43rz3',
+      twitterClient.instance_variable_get(:@statusUpdates).last
+    )
   end
 
   def test_silent_option_logs_games_but_doesnt_tweet
