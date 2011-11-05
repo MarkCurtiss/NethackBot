@@ -40,4 +40,8 @@ class Player
   def serializeGame(game)
     File.open(self.gamesFile, 'a') { |file| file.puts(game) }
   end
+
+  def new?
+    self.oldGames.empty?
+  end
 end

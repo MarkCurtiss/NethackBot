@@ -72,4 +72,15 @@ class PlayerTest < Test::Unit::TestCase
     testPlayer.serializeGame(games[0])
     assert_equal(2, testPlayer.newGames.size)
   end
+
+  def test_is_new_if_player_has_no_existing_games
+    testPlayer = Player.new(@@playerName)
+    assert(testPlayer.new?)
+
+    games = testPlayer.newGames
+    assert(testPlayer.new?)
+
+    testPlayer.serializeGame(games[0])
+    assert(! testPlayer.new?)
+  end
 end
