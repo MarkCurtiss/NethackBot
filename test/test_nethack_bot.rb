@@ -2,20 +2,29 @@ require 'helper'
 
 class NethackBotTest < Test::Unit::TestCase
   @@configFileName = '.nethack_bot_test'
-  @@twitterName = 'sswtestnb'
-  @@twitterPass = 'testPassword'
+  @@gamesPath = Dir.pwd + (ENV['TEST_DIR'] || '') + '/games/'
   @@playerName = 'nbTest'
-  @@playerGameFile = Dir.pwd + (ENV['TEST_DIR'] || '') + '/games/' + @@playerName + '.games'
+  @@playerGameFile = @@gamesPath + @@playerName + '.games'
+  @@newPlayerName = 'cultofluna'
+  @@newPlayerGameFile = @@gamesPath + @@newPlayerName + '.games'
 
   def teardown
-    File.unlink(@@playerGameFile) if File.exists?(@@playerGameFile)
-    File.unlink(@@configFileName) if File.exists?(@@configFileName)
+    File.unlink(@@playerGameFile)    if File.exists?(@@playerGameFile)
+    File.unlink(@@newPlayerGameFile) if File.exists?(@@newPlayerGameFile)
+    File.unlink(@@configFileName)    if File.exists?(@@configFileName)
+  end
+
+  def writeTestConfigFile(players = [ @@playerName, 'bug'])
+    File.open(@@configFileName, 'w') { |file|
+      file.puts('players=' + players.join(','))
+    }
   end
 
   def test_status_update
-    File.open(@@configFileName, 'w') { |file|
-      file.puts('players=' + @@playerName + ',bug')
-    }
+    writeTestConfigFile
+
+    player = Player.new(@@playerName)
+    player.serializeGame(player.newGames.first)
 
     testBot = NethackBot.new(@@configFileName)
 
@@ -36,9 +45,7 @@ class NethackBotTest < Test::Unit::TestCase
   end
 
   def test_silent_option_logs_games_but_doesnt_tweet
-    File.open(@@configFileName, 'w') { |file|
-      file.puts('players=' + @@playerName + ',bug')
-    }
+    writeTestConfigFile
 
     testBot = NethackBot.new(@@configFileName, :silent => true)
 
@@ -91,12 +98,33 @@ class NethackBotTest < Test::Unit::TestCase
   end
 
   def test_get_death_metadata_handles_non_ascii_characters
-    File.open(@@configFileName, 'w') { |file|
-      file.puts('players=' + @@playerName + ',bug')
-    }
+    writeTestConfigFile
 
     testBot = NethackBot.new(@@configFileName, :silent => true)
     testBot.getDeathMetadata('http://alt.org/nethack/userdata/t/thebuckley/dumplog/1252117582.nh343.txt', 'thebuckley')
   end
 
+  def test_adding_a_new_player_silently_logs_games_without_posting_updates
+    writeTestConfigFile([ @@playerName, @@newPlayerName ])
+
+    oldPlayer = Player.new(@@playerName)
+    oldPlayer.serializeGame(oldPlayer.newGames.last)
+
+    testBot = NethackBot.new(@@configFileName)
+
+    twitterClient = testBot.twitterAccount
+    twitterClient.instance_variable_set(:@statusUpdates, [])
+    def twitterClient.update(status)
+      @statusUpdates.push(status)
+    end
+
+    testBot.run
+
+    statusUpdates = twitterClient.instance_variable_get(:@statusUpdates)
+
+    assert_equal(3, statusUpdates.grep(/#{@@playerName.upcase}/).size)
+    assert_equal(0, statusUpdates.grep(/#{@@newPlayerName.upcase}/).size)
+
+    assert(! Player.new(@@newPlayerName).new?)
+ end
 end

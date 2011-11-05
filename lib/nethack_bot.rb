@@ -44,19 +44,24 @@ class NethackBot
     self.logger.info("running in #{@silent ? 'silent' : 'normal'} mode")
 
     self.players.each { |player|
-      self.logger.debug("#{player.gamesFile} already exists - comparing it to #{player.name}'s games to find new ones") if File.exist?(player.gamesFile)
+      playerIsNew = player.new? #performance hack so we don't keep re-reading the player's games file as we loop over their new games
+      if (playerIsNew)
+        self.logger.debug("#{player.name} is new - their games will be logged but not posted to twitter")
+      else
+        self.logger.debug("#{player.name} already exists - their new games will be posted to twitter")
+      end
 
       player.newGames.each { |newGame|
         deathMetadata = getDeathMetadata(newGame, player.name)
 
-        if (@silent)
-          logger.debug("logging #{player.name}'s game #{newGame}")
+        if (@silent || playerIsNew)
+          self.logger.debug("logging #{player.name}'s game #{newGame}")
           player.serializeGame(newGame)
         else
-          logger.debug("posting update for #{player.name}'s game #{newGame}")
+          self.logger.debug("posting update for #{player.name}'s game #{newGame}")
           tinyGameLogUrl = getTinyUrl(newGame)
           postedToTwitterSuccessfully = ! self.twitterAccount.update(self.statusUpdate(player, tinyGameLogUrl, deathMetadata)).nil?
-          logger.debug("successfully posted to twitter?: #{postedToTwitterSuccessfully}")
+          self.logger.debug("successfully posted to twitter?: #{postedToTwitterSuccessfully}")
           player.serializeGame(newGame) if postedToTwitterSuccessfully
         end
       }
