@@ -56,12 +56,11 @@ class NethackBot
       @logger.debug("looking for games for #{player.name}...")
 
       player.newGames.each { |newGame|
-        deathMetadata = getDeathMetadata(newGame, player.name)
-
         if (@silent || playerIsNew)
           @logger.debug("logging #{player.name}'s game #{newGame}")
           player.serializeGame(newGame)
         else
+          deathMetadata = getDeathMetadata(newGame, player.name)
           @logger.debug("posting update for #{player.name}'s game #{newGame}")
           tinyGameLogUrl = getTinyUrl(newGame)
           postedToTwitterSuccessfully = ! @twitterAccount.update(self.statusUpdate(player, tinyGameLogUrl, deathMetadata)).nil?
@@ -75,23 +74,38 @@ class NethackBot
   end
 
   def statusUpdate(player, url, deathMetadata)
-    "#{player.name.upcase} the #{deathMetadata[0]} died. Lvl: #{deathMetadata[1]}. Killer: #{deathMetadata[2]}. #{url}"
+    playerDied = ! /(ascended|escaped|quit)/.match(deathMetadata[:killer])
+    playerAscended = /ascended/.match(deathMetadata[:killer])
+    endCondition = ''
+
+    if (playerAscended)
+      endCondition = 'ascended!'
+    elsif (playerDied)
+      endCondition = 'died.'
+    else
+      endCondition = deathMetadata[:killer] + '.'
+    end
+
+    statusUpdate = "#{player.name.upcase} the #{deathMetadata[:class]} #{endCondition} "
+    statusUpdate += "Lvl: #{deathMetadata[:level]}. "
+    statusUpdate += "Killer: #{deathMetadata[:killer]}. " if playerDied
+    statusUpdate += url
   end
 
   def getDeathMetadata(gameLogUrl, playerName)
      commandString = '/usr/bin/curl --silent ' + gameLogUrl
      rawLog = `#{commandString}`.encode('ASCII', :invalid => :replace)
 
-     deathMetadata = Array.new
+     deathMetadata = Hash.new
 
-     rawLog =~ /#{playerName} the (.*).../
-     deathMetadata << $1 ? $1 : 'unknown'
+     rawLog =~ /#{playerName}, \w+ \w+ \w+ (.*)/
+     deathMetadata[:class] = $1 ? $1 : 'unknown'
 
      rawLog =~ /^You were level (.*) with a maximum/
-     deathMetadata << $1 ? $1 : 'unknown'
+     deathMetadata[:level] = $1 ? $1 : 'unknown'
 
      rawLog =~ /^Killer: (.*)/
-     deathMetadata << $1 ? $1 : 'unknown'
+     deathMetadata[:killer] = $1 ? $1 : 'unknown'
 
      return deathMetadata
   end

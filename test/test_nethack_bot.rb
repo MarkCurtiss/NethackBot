@@ -43,6 +43,45 @@ class NethackBotTest < Test::Unit::TestCase
     )
   end
 
+  def test_status_update_recognizes_ascension
+    writeTestConfigFile
+    testBot = NethackBot.new(@@configFileName)
+    player = Player.new('thebuckley')
+
+    url = 'http://alt.org/nethack/userdata/t/thebuckley/dumplog/1256176608.nh343.txt'
+    deathMetadata = testBot.getDeathMetadata(url, player.name)
+    assert_equal(
+      'THEBUCKLEY the Valkyrie ascended! Lvl: 30. ',
+      testBot.statusUpdate(player, '', deathMetadata)
+    )
+  end
+
+  def test_status_update_recognizes_quitting
+    writeTestConfigFile
+    testBot = NethackBot.new(@@configFileName)
+    player = Player.new('thebuckley')
+
+    url = 'http://alt.org/nethack/userdata/t/thebuckley/dumplog/1251340474.nh343.txt'
+    deathMetadata = testBot.getDeathMetadata(url, player.name)
+    assert_equal(
+      'THEBUCKLEY the Valkyrie quit. Lvl: 1. ',
+      testBot.statusUpdate(player, '', deathMetadata)
+    )
+  end
+
+  def test_status_update_recognizes_escape
+    writeTestConfigFile
+    testBot = NethackBot.new(@@configFileName)
+    player = Player.new('thebuckley')
+
+    url = 'http://alt.org/nethack/userdata/t/thebuckley/dumplog/1251344213.nh343.txt'
+    deathMetadata = testBot.getDeathMetadata(url, player.name)
+    assert_equal(
+      'THEBUCKLEY the Valkyrie escaped. Lvl: 1. ',
+      testBot.statusUpdate(player, '', deathMetadata)
+    )
+  end
+
   def test_silent_option_logs_games_but_doesnt_tweet
     writeTestConfigFile
 
