@@ -2,12 +2,12 @@ require 'helper'
 
 #this test actually posts to a twitter account.  for this reason, it is not included
 #as part of the test suite.  it's intended to be used a sanity check to see if NethackBot
-#will work on your system (necessary binaries are in the right place, it has adequate  
+#will work on your system (necessary binaries are in the right place, it has adequate
 #permissions, etc).
 
 #INTERESTING FACT
-#before this test, the only way to test NethackBot was to actually log into one of the 
-#watched alt.org players and die, then see if the Twitter account was updated.
+#before this test, the only way to test NethackBot was to actually log into one of the
+#watched alt.org player accounts and die, then see if the Twitter account was updated.
 
 class NethackBotTestRun < Test::Unit::TestCase
   @@configFileName = File.expand_path('~/.nethack_bot_test_run')
@@ -30,11 +30,23 @@ class NethackBotTestRun < Test::Unit::TestCase
       file.puts('oauth_token_secret=nc6Y4vSRLAA2vd1G82zjmnS7iUHRgJ7YbB9IZew')
     }
 
-    NethackBot.new(@@configFileName).run
+    testBot = NethackBot.new(@@configFileName)
+    testBot.run
 
     @@players.each { |playerName|
       player = Player.new(playerName)
       assert(File.exists?(player.gamesFile), "#{playerName} does not have a games file")
+
+      #delete the last game and overwrite the gamesFile
+      #this will cause the last game to appear new and get tweeted
+      newFileContents = File.open(player.gamesFile).readlines
+      newFileContents.pop
+
+      File.open(player.gamesFile, 'w') { |f|
+        f.puts(newFileContents)
+      }
     }
+
+    testBot.run
   end
 end
