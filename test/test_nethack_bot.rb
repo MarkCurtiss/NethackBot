@@ -38,7 +38,7 @@ class NethackBotTest < Test::Unit::TestCase
     testBot.run
 
     assert_equal(
-      'NBTEST the Healer died. Lvl: 1. Killer: sewer rat. http://tinyurl.com/2g43rz3',
+      'NBTEST the Healer died. Lvl: 1. Killer: sewer rat. http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170828.nh343.txt',
       twitterClient.instance_variable_get(:@statusUpdates).last
     )
   end

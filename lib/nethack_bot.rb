@@ -62,8 +62,7 @@ class NethackBot
         else
           deathMetadata = getDeathMetadata(newGame, player.name)
           @logger.debug("posting update for #{player.name}'s game #{newGame}")
-          tinyGameLogUrl = getTinyUrl(newGame)
-          postedToTwitterSuccessfully = ! @twitterAccount.update(self.statusUpdate(player, tinyGameLogUrl, deathMetadata)).nil?
+          postedToTwitterSuccessfully = ! @twitterAccount.update(self.statusUpdate(player, newGame, deathMetadata)).nil?
           @logger.debug("successfully posted to twitter?: #{postedToTwitterSuccessfully}")
           player.serializeGame(newGame) if postedToTwitterSuccessfully
         end
@@ -109,9 +108,4 @@ class NethackBot
 
      return deathMetadata
   end
-
-  def getTinyUrl(gameLogUrl)
-     return open('http://tinyurl.com/api-create.php?url=' + gameLogUrl, "UserAgent" => "Ruby-Wget").read
-  end
-
 end
