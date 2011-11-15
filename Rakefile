@@ -9,8 +9,8 @@ task :default => :spec
 
 namespace :test do
   desc 'Run a sanity check - this attempts to post to a dummy nethack account to see if your environment is setup properly'
-  task "sanity" do 
-    ruby("-I lib:bin:test test/test_run.rb")
+  RSpec::Core::RakeTask.new('sanity') do |t|
+    t.pattern = 'test/test_run.rb'
   end
 end
 
