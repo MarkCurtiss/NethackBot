@@ -1,14 +1,11 @@
 require 'rake'
 require 'rake/testtask'
 require 'rake/clean'
+require 'rspec/core/rake_task'
 
-task :default => [:test]
+RSpec::Core::RakeTask.new(:spec)
 
-Rake::TestTask.new(:test) do |t|
-  t.libs << 'test' << 'lib' << 'bin'
-  t.test_files = FileList['test/test*.rb'].exclude('test/test_run.rb')
-  t.verbose = true
-end
+task :default => :spec
 
 namespace :test do
   desc 'Run a sanity check - this attempts to post to a dummy nethack account to see if your environment is setup properly'
