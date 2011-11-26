@@ -61,10 +61,17 @@ class NethackBot
           player.serializeGame(newGame)
         else
           deathMetadata = getDeathMetadata(newGame, player.name)
-          @logger.debug("posting update for #{player.name}'s game #{newGame}")
-          postedToTwitterSuccessfully = ! @twitterAccount.update(self.statusUpdate(player, newGame, deathMetadata)).nil?
-          @logger.debug("successfully posted to twitter?: #{postedToTwitterSuccessfully}")
-          player.serializeGame(newGame) if postedToTwitterSuccessfully
+
+          if (deathMetadata.empty?)
+            #i strongly suspect but haven't been able to prove that this happens when the URL's been posted to nethack.alt.org but
+            #the actual dumplog hasn't been fully populated yet.  coming back to the game later should fix it.
+            @logger.debug("skipping this game as we were unable to parse to it correctly - will try again later")
+          else
+            @logger.debug("posting update for #{player.name}'s game #{newGame}")
+            postedToTwitterSuccessfully = ! @twitterAccount.update(self.statusUpdate(player, newGame, deathMetadata)).nil?
+            @logger.debug("successfully posted to twitter?: #{postedToTwitterSuccessfully}")
+            player.serializeGame(newGame) if postedToTwitterSuccessfully
+          end
         end
       }
     }
@@ -92,20 +99,30 @@ class NethackBot
   end
 
   def getDeathMetadata(gameLogUrl, playerName)
-     commandString = '/usr/bin/curl --silent ' + gameLogUrl
-     rawLog = `#{commandString}`.encode('ASCII', :invalid => :replace)
+    death_text = read_url(gameLogUrl)
 
-     deathMetadata = Hash.new
+    deathMetadata = Hash.new
 
-     rawLog =~ /#{playerName}, \w+ \w+ \w+ (.*)/
-     deathMetadata[:class] = $1 ? $1 : 'unknown'
+    death_text =~ /#{playerName}, \w+ \w+ \w+ (.*)/
+    deathMetadata[:class] = $1 if $1
 
-     rawLog =~ /^You were level (.*) with a maximum/
-     deathMetadata[:level] = $1 ? $1 : 'unknown'
+    death_text =~ /^You were level (.*) with a maximum/
+    deathMetadata[:level] = $1 if $1
 
-     rawLog =~ /^Killer: (.*)/
-     deathMetadata[:killer] = $1 ? $1 : 'unknown'
+    death_text =~ /^Killer: (.*)/
+    deathMetadata[:killer] = $1 if $1
 
-     return deathMetadata
+    if (deathMetadata.keys.size < 3)
+      @logger.debug("parsed the following incomplete death metadata: #{deathMetadata}")
+      deathMetadata.clear
+    end
+
+    return deathMetadata
+  end
+
+  protected
+  def read_url(game_log_url)
+     command_string = '/usr/bin/curl --silent ' + game_log_url
+     return `#{command_string}`.encode('ASCII', :invalid => :replace)
   end
 end

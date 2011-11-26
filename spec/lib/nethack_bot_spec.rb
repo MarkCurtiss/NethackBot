@@ -48,6 +48,29 @@ describe NethackBot do
       }
     end
 
+    it "should return an empty hash if any piece of metadata is missing" do
+      nethack_bot.stub(:read_url) { <<TEXT
+        NbTest, neutral female gnomish Healer
+        You were level 1 with a maximum of 12 hit points when you died.
+TEXT
+      }
+      nethack_bot.getDeathMetadata('fake_url', 'nbTest').should == {}
+
+      nethack_bot.stub(:read_url) { <<TEXT
+        NbTest, neutral female gnomish Healer
+        Killer: sewer rat
+TEXT
+      }
+      nethack_bot.getDeathMetadata('fake_url', 'nbTest').should == {}
+
+      nethack_bot.stub(:read_url) { <<TEXT
+        Killer: sewer rat
+        You were level 1 with a maximum of 12 hit points when you died.
+TEXT
+      }
+      nethack_bot.getDeathMetadata('fake_url', 'nbTest').should == {}
+    end
+
     it 'should handle non-ASCII characters' do
       lambda {
         nethack_bot.getDeathMetadata('http://alt.org/nethack/userdata/t/thebuckley/dumplog/1252117582.nh343.txt', 'thebuckley')
@@ -71,6 +94,21 @@ describe NethackBot do
       test_bot.run
 
       player.oldGames.should == [ 'http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170828.nh343.txt' ]
+    end
+
+    it 'should not log the game or post it to twitter if no death metadata can be found' do
+      test_bot = NethackBot.new(config_file_name)
+
+      test_bot.players.each { |p|
+        p.stub(:new?) { false }
+        p.stub(:newGames) { [ 'http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170828.nh343.txt' ] }
+      }
+      test_bot.stub(:read_url) { 'messed up death text' }
+      test_bot.twitterAccount.should_not_receive(:update)
+
+      test_bot.run
+
+      player.oldGames.should == []
     end
 
     it 'should log games but not tweet them if silent is set' do
@@ -106,6 +144,7 @@ describe NethackBot do
         'http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170828.nh343.txt',
       ]
     end
+
   end
 
   describe '#statusUpdate' do
