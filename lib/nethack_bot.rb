@@ -4,7 +4,9 @@ require 'bundler/setup'
 require 'logger'
 require 'fileutils'
 require 'twitter'
+
 require 'player'
+require 'game'
 
 class NethackBot
   attr_accessor :players, :consumer_key, :consumer_secret, :oauth_token, :oauth_token_secret, :twitterAccount, :logger, :silent
@@ -46,6 +48,8 @@ class NethackBot
     @logger.info("running in #{@silent ? 'silent' : 'normal'} mode")
 
     @players.each { |player|
+      @logger.debug("looking for games for #{player.name}...")
+
       playerIsNew = player.new? #performance hack so we don't keep re-reading the player's games file as we loop over their new games
       if (playerIsNew)
         @logger.debug("#{player.name} is new - their games will be logged but not posted to twitter")
@@ -53,22 +57,22 @@ class NethackBot
         @logger.debug("#{player.name} already exists - their new games will be posted to twitter")
       end
 
-      @logger.debug("looking for games for #{player.name}...")
-
       player.newGames.each { |newGame|
+        @logger.debug("considering game #{newGame.url}")
         if (@silent || playerIsNew)
-          @logger.debug("logging #{player.name}'s game #{newGame}")
+          @logger.debug("silently logging it")
           player.serializeGame(newGame)
         else
-          deathMetadata = getDeathMetadata(newGame, player.name)
+          deathMetadata = newGame.death_metadata
 
-          if (deathMetadata.empty?)
+          if (deathMetadata.keys.size < 3)
             #i strongly suspect but haven't been able to prove that this happens when the URL's been posted to nethack.alt.org but
             #the actual dumplog hasn't been fully populated yet.  coming back to the game later should fix it.
-            @logger.debug("skipping this game as we were unable to parse to it correctly - will try again later")
+            @logger.debug("parsed the following incomplete death metadata: #{deathMetadata}")
+            @logger.debug("skipping this game as we were unable to parse it correctly - will try again later")
           else
-            @logger.debug("posting update for #{player.name}'s game #{newGame}")
-            postedToTwitterSuccessfully = ! @twitterAccount.update(self.statusUpdate(player, newGame, deathMetadata)).nil?
+            @logger.debug("posting update to twitter")
+            postedToTwitterSuccessfully = ! @twitterAccount.update(self.statusUpdate(player, newGame.url, deathMetadata)).nil?
             @logger.debug("successfully posted to twitter?: #{postedToTwitterSuccessfully}")
             player.serializeGame(newGame) if postedToTwitterSuccessfully
           end
@@ -96,33 +100,5 @@ class NethackBot
     statusUpdate += "Lvl: #{deathMetadata[:level]}. "
     statusUpdate += "Killer: #{deathMetadata[:killer]}. " if playerDied
     statusUpdate += url
-  end
-
-  def getDeathMetadata(gameLogUrl, playerName)
-    death_text = read_url(gameLogUrl)
-
-    deathMetadata = Hash.new
-
-    death_text =~ /#{playerName}, \w+ \w+ \w+ (.*)/
-    deathMetadata[:class] = $1 if $1
-
-    death_text =~ /^You were level (.*) with a maximum/
-    deathMetadata[:level] = $1 if $1
-
-    death_text =~ /^Killer: (.*)/
-    deathMetadata[:killer] = $1 if $1
-
-    if (deathMetadata.keys.size < 3)
-      @logger.debug("parsed the following incomplete death metadata: #{deathMetadata}")
-      deathMetadata.clear
-    end
-
-    return deathMetadata
-  end
-
-  protected
-  def read_url(game_log_url)
-     command_string = '/usr/bin/curl --silent ' + game_log_url
-     return `#{command_string}`.encode('ASCII', :invalid => :replace)
   end
 end

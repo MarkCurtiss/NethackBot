@@ -2,7 +2,7 @@ require 'spec_helper'
 
 #Most tests in this spec use the player nbTest.  This is because nbTest has a few dummy games setup
 #on alt.org specifically for testing (http://alt.org/nethack/dumplogs.php?player=nbTest).  If you change the playername,
-#the tests will fail unless you change the playername to look at an actual alt.org player.
+#the tests will fail unless the new name is also a player on alt.org
 
 describe Player do
   let(:test_player) { Player.new('nbTest') }
@@ -23,13 +23,13 @@ describe Player do
   end
 
   describe '#newGames' do
-    it 'should return a list of links to nethack dumplogs for completed games' do
+    it 'should return a list of game objects' do
       test_player.newGames.should == [
         'http://alt.org/nethack/userdata/n/nbTest/dumplog/1252731025.nh343.txt',
         'http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170714.nh343.txt',
         'http://alt.org/nethack/userdata/n/nbTest/dumplog/1252731049.nh343.txt',
         'http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170828.nh343.txt',
-      ]
+      ].map { |url| Game.new(url) }
     end
 
     it "should exclude games which we've already logged in the player's gamesFile" do

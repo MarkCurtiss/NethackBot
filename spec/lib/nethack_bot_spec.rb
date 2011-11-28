@@ -37,54 +37,13 @@ describe NethackBot do
     end
   end
 
-  describe '#getDeathMetadata' do
-    let(:nethack_bot) { NethackBot.new(config_file_name) }
-
-    it 'should read the game dump at the given url and extract tweetable info' do
-      nethack_bot.getDeathMetadata('http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170828.nh343.txt', 'nbTest').should == {
-        :class => 'Healer',
-        :level => '1',
-        :killer => 'sewer rat',
-      }
-    end
-
-    it "should return an empty hash if any piece of metadata is missing" do
-      nethack_bot.stub(:read_url) { <<TEXT
-        NbTest, neutral female gnomish Healer
-        You were level 1 with a maximum of 12 hit points when you died.
-TEXT
-      }
-      nethack_bot.getDeathMetadata('fake_url', 'nbTest').should == {}
-
-      nethack_bot.stub(:read_url) { <<TEXT
-        NbTest, neutral female gnomish Healer
-        Killer: sewer rat
-TEXT
-      }
-      nethack_bot.getDeathMetadata('fake_url', 'nbTest').should == {}
-
-      nethack_bot.stub(:read_url) { <<TEXT
-        Killer: sewer rat
-        You were level 1 with a maximum of 12 hit points when you died.
-TEXT
-      }
-      nethack_bot.getDeathMetadata('fake_url', 'nbTest').should == {}
-    end
-
-    it 'should handle non-ASCII characters' do
-      lambda {
-        nethack_bot.getDeathMetadata('http://alt.org/nethack/userdata/t/thebuckley/dumplog/1252117582.nh343.txt', 'thebuckley')
-      }.should_not raise_exception(ArgumentError, 'invalid byte sequence in UTF-8')
-    end
-  end
-
   describe '#run' do
     it "it should log a player's games and post them to twitter" do
       test_bot = NethackBot.new(config_file_name)
 
       test_bot.players.each { |p|
         p.stub(:new?) { false }
-        p.stub(:newGames) { [ 'http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170828.nh343.txt' ] }
+        p.stub(:newGames) { [ Game.new('http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170828.nh343.txt') ] }
       }
 
       test_bot.twitterAccount.should_receive(:update).with(
@@ -93,17 +52,20 @@ TEXT
 
       test_bot.run
 
-      player.oldGames.should == [ 'http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170828.nh343.txt' ]
+      player.oldGames.should == [ Game.new('http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170828.nh343.txt') ]
     end
 
-    it 'should not log the game or post it to twitter if no death metadata can be found' do
+    it 'should not log the game or post it to twitter if death metadata is incomplete' do
       test_bot = NethackBot.new(config_file_name)
 
       test_bot.players.each { |p|
         p.stub(:new?) { false }
-        p.stub(:newGames) { [ 'http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170828.nh343.txt' ] }
+        p.stub(:newGames) {
+          game = Game.new('fake_url')
+          game.stub(:death_metadata) { {:class => 'Healer', :level => 1} }
+          [ game ]
+        }
       }
-      test_bot.stub(:read_url) { 'messed up death text' }
       test_bot.twitterAccount.should_not_receive(:update)
 
       test_bot.run
@@ -127,7 +89,7 @@ TEXT
         'http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170714.nh343.txt',
         'http://alt.org/nethack/userdata/n/nbTest/dumplog/1252731049.nh343.txt',
         'http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170828.nh343.txt',
-      ]
+      ].map { |url| Game.new(url) }
     end
 
     it "should log a player's games but not post their updates to twitter if it's a new player" do
@@ -142,7 +104,7 @@ TEXT
         'http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170714.nh343.txt',
         'http://alt.org/nethack/userdata/n/nbTest/dumplog/1252731049.nh343.txt',
         'http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170828.nh343.txt',
-      ]
+      ].map { |url| Game.new(url) }
     end
 
   end
