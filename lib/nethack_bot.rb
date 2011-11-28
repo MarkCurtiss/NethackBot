@@ -65,7 +65,7 @@ class NethackBot
         else
           deathMetadata = newGame.death_metadata
 
-          if (deathMetadata.keys.size < 3)
+          if (deathMetadata.keys.size < 4)
             #i strongly suspect but haven't been able to prove that this happens when the URL's been posted to nethack.alt.org but
             #the actual dumplog hasn't been fully populated yet.  coming back to the game later should fix it.
             @logger.debug("parsed the following incomplete death metadata: #{deathMetadata}")
@@ -96,7 +96,7 @@ class NethackBot
       endCondition = deathMetadata[:killer] + '.'
     end
 
-    statusUpdate = "#{player.name.upcase} the #{deathMetadata[:class]} #{endCondition} "
+    statusUpdate = "#{deathMetadata[:player]} the #{deathMetadata[:class]} #{endCondition} "
     statusUpdate += "Lvl: #{deathMetadata[:level]}. "
     statusUpdate += "Killer: #{deathMetadata[:killer]}. " if playerDied
     statusUpdate += url

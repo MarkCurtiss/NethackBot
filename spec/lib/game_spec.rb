@@ -33,6 +33,7 @@ describe Game do
   describe '#death_metadata' do
     it 'should return a hash with information about how the player died' do
       game.death_metadata.should == {
+        :player => 'nbTest',
         :class => 'Healer',
         :level => '1',
         :killer => 'sewer rat',
@@ -46,6 +47,7 @@ You were level 1 with a maximum of 12 hit points when you died.
 TEXT
       }
       game.death_metadata.should == {
+        :player => 'nbTest',
         :class => 'Healer',
         :level => '1',
       }
@@ -56,6 +58,7 @@ Killer: sewer rat
 TEXT
       }
       game.death_metadata.should == {
+        :player => 'nbTest',
         :class => 'Healer',
         :killer => 'sewer rat',
       }

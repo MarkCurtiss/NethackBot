@@ -47,7 +47,7 @@ describe NethackBot do
       }
 
       test_bot.twitterAccount.should_receive(:update).with(
-        'NBTEST the Healer died. Lvl: 1. Killer: sewer rat. http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170828.nh343.txt'
+        'nbTest the Healer died. Lvl: 1. Killer: sewer rat. http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170828.nh343.txt'
       ).and_return(true)
 
       test_bot.run
@@ -112,22 +112,28 @@ describe NethackBot do
   describe '#statusUpdate' do
     let(:nethack_bot) { NethackBot.new(config_file_name) }
 
-    it 'should recognize an ascension' do
-      death_metadata = { :class => 'Valkyrie', :level => 30, :killer => 'ascended' }
+    it 'should use the player name from the actual dumplog to preserve casing' do
+      death_metadata = { :player => 'mIxEd CaSe', :class => 'Knight', :level => 1, :killer => 'slipped while mounting a saddled pony' }
 
-      nethack_bot.statusUpdate(player, 'fake_url', death_metadata).should eql 'NBTEST the Valkyrie ascended! Lvl: 30. fake_url'
+      nethack_bot.statusUpdate(player, 'fake_url', death_metadata).should eql 'mIxEd CaSe the Knight died. Lvl: 1. Killer: slipped while mounting a saddled pony. fake_url'
+    end
+
+    it 'should recognize an ascension' do
+      death_metadata = { :player => 'nbTest', :class => 'Valkyrie', :level => 30, :killer => 'ascended' }
+
+      nethack_bot.statusUpdate(player, 'fake_url', death_metadata).should eql 'nbTest the Valkyrie ascended! Lvl: 30. fake_url'
     end
 
     it 'should recognize quitting' do
-      death_metadata = { :class => 'Samurai', :level => 2, :killer => 'quit' }
+      death_metadata = { :player => 'nbTest', :class => 'Samurai', :level => 2, :killer => 'quit' }
 
-      nethack_bot.statusUpdate(player, 'fake_url', death_metadata).should eql 'NBTEST the Samurai quit. Lvl: 2. fake_url'
+      nethack_bot.statusUpdate(player, 'fake_url', death_metadata).should eql 'nbTest the Samurai quit. Lvl: 2. fake_url'
     end
 
     it 'should recognize an escape' do
-      death_metadata = { :class => 'Barbarian', :level => 1, :killer => 'escaped' }
+      death_metadata = { :player => 'nbTest', :class => 'Barbarian', :level => 1, :killer => 'escaped' }
 
-      nethack_bot.statusUpdate(player, 'fake_url', death_metadata).should eql 'NBTEST the Barbarian escaped. Lvl: 1. fake_url'
+      nethack_bot.statusUpdate(player, 'fake_url', death_metadata).should eql 'nbTest the Barbarian escaped. Lvl: 1. fake_url'
     end
   end
 end

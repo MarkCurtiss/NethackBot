@@ -21,13 +21,14 @@ class Game
     death_text = self.contents
     death_metadata = Hash.new
 
-    death_text =~ /^\w+, (neutral|chaotic|lawful) (female|male) \w+ (\w+)/
-    death_metadata[:class] = $3 if $3
+    death_text.match(/^(\w+), (neutral|chaotic|lawful) (female|male) \w+ (\w+)/)
+    death_metadata[:player] = $1 if $1
+    death_metadata[:class] = $4 if $4
 
-    death_text =~ /^You were level (.*) with a maximum of \d+ hit points/
+    death_text.match(/^You were level (.*) with a maximum of \d+ hit points/)
     death_metadata[:level] = $1 if $1
 
-    death_text =~ /^Killer: (.*)/
+    death_text.match(/^Killer: (.*)/)
     death_metadata[:killer] = $1 if $1
 
     return death_metadata
