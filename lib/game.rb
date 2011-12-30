@@ -3,10 +3,11 @@ class Game
 
   def initialize(url)
     @url = url
+    @contents = nil
   end
 
   def ==(other_game)
-    @url.eql?(other_game.url)
+    @url.eql?(other_game.url) || self.contents.hash.eql?(other_game.contents.hash)
   end
 
   def eql?(other_game)
@@ -14,7 +15,7 @@ class Game
   end
 
   def hash
-    @url.hash
+    self.contents.hash
   end
 
   def death_metadata
@@ -34,9 +35,9 @@ class Game
     return death_metadata
   end
 
-  protected
   def contents
-     command_string = '/usr/bin/curl --silent ' + @url
-     return `#{command_string}`.encode('ASCII', :invalid => :replace)
+    return @game_contents unless @game_contents.nil?
+    command_string = '/usr/bin/curl --silent ' + @url
+    @game_contents = `#{command_string}`.encode('ASCII', :invalid => :replace)
   end
 end

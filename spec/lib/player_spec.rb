@@ -44,6 +44,8 @@ describe Player do
 
     it 'should handle players with a large number of games without dying due to an edge case in open-uri' do
       prolific_player = Player.new('graa')
+      Game.any_instance.stub(:contents) { '' }
+
       lambda {
         prolific_player.newGames
       }.should_not raise_error
