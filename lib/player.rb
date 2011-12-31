@@ -18,8 +18,11 @@ class Player
   end
 
   def oldGames
-    old_game_urls = File.exists?(self.gamesFile) ?  File.open(self.gamesFile, "r").readlines : []
-    return old_game_urls.map { |url| Game.new(url.chomp!) }
+    old_games = File.exists?(self.gamesFile) ?  File.open(self.gamesFile, "r").readlines : []
+    return old_games.map { |json_hash|
+      serialized_game = JSON.parse(json_hash)
+      Game.new(serialized_game['url'], serialized_game['id'])
+    }
   end
 
   def current_games
@@ -49,7 +52,7 @@ class Player
   end
 
   def serializeGame(game)
-    File.open(self.gamesFile, 'a') { |file| file.puts(game.url) }
+    File.open(self.gamesFile, 'a') { |file| file.puts({ :url => game.url, :id => game.id }.to_json) }
   end
 
   def new?
