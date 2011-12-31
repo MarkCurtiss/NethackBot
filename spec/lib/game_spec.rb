@@ -26,6 +26,17 @@ describe Game do
         game.should == different_game
         game.should == same_game
       end
+
+      it 'should only compare contents if urls are different (for performance)' do
+        num_times_called = 0
+
+        same_game.stub(:contents) { num_times_called += 1; '' }
+        same_game == game
+        num_times_called.should == 0
+
+        same_game == different_game
+        num_times_called.should == 1
+      end
     end
 
     describe '#eql?' do

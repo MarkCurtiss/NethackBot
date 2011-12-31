@@ -1,5 +1,4 @@
 require 'open-uri'
-require 'fileutils'
 
 class Player
   attr_accessor :name
@@ -23,17 +22,30 @@ class Player
     return old_game_urls.map { |url| Game.new(url.chomp!) }
   end
 
-  def newGames
-    currentGames = []
+  def current_games
+    current_games = []
 
     open(self.url) { |page_content|
       page_content.read.scan(/http.*userdata\/.*dumplog.*.txt/) { |url_string|
         game_urls = url_string.split(/href/).map { |url| url[/http:.*txt/] }
-        currentGames = game_urls.map { |url| Game.new(url) }
+        current_games = game_urls.map { |url| Game.new(url) }
       }
     }
+    return current_games
+  end
 
-    newGames = currentGames - self.oldGames
+  def newGames
+    old_games = self.oldGames
+    current_games = self.current_games
+
+    #it'd be more elegant to do new_games = current_games - old_games but that would be slower,
+    #since array arithmetic hashes the elements.  this is n^2 but equality testing will be faster
+    #most of the time (see Game#hash and Game#==)
+    new_games = []
+    current_games.each { |g|
+      new_games.push(g) unless old_games.include?(g)
+    }
+    return new_games
   end
 
   def serializeGame(game)

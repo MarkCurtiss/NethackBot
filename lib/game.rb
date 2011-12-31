@@ -3,7 +3,7 @@ class Game
 
   def initialize(url)
     @url = url
-    @contents = nil
+    @game_contents = nil
   end
 
   def ==(other_game)
