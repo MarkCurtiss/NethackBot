@@ -1,30 +1,20 @@
 class Game
   attr_accessor :url
 
-  def initialize(url, id=nil)
+  def initialize(url)
     @url = url
-    @id = id
-    @game_contents = nil
   end
 
   def ==(other_game)
-    @url.eql?(other_game.url) || self.id.eql?(other_game.id)
+    @url.eql?(other_game.url)
   end
 
   def eql?(other_game)
     self == other_game && self.class == other_game.class
   end
 
-  def id
-    return @id unless @id.nil?
-    @id = Digest::MD5.hexdigest(self.contents)
-    return @id
-  end
-
   def hash
-    return @hash unless @hash.nil?
-    @hash = self.contents.hash
-    return @hash
+    @url.hash
   end
 
   def death_metadata
@@ -44,9 +34,9 @@ class Game
     return death_metadata
   end
 
+  protected
   def contents
-    return @game_contents unless @game_contents.nil?
-    command_string = '/usr/bin/curl --silent ' + @url
-    @game_contents = `#{command_string}`.encode('ASCII', :invalid => :replace)
+     command_string = '/usr/bin/curl --silent ' + @url
+     return `#{command_string}`.encode('ASCII', :invalid => :replace)
   end
 end

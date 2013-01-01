@@ -17,50 +17,15 @@ describe Game do
       it 'should consider two games equal if they have the same url' do
         game.should == same_game
         game.should_not == different_game
-      end
-
-      it 'should consider two games equal if they have different urls but the same contents' do
-        game.stub(:contents)           { '20 Minutes / 40 Years' }
-        different_game.stub(:contents) { '20 Minutes / 40 Years' }
-
-        game.should == different_game
-        game.should == same_game
-      end
-
-      it 'should only compare contents if urls are different (for performance)' do
-        num_times_called = 0
-
-        same_game.stub(:contents) { num_times_called += 1; '' }
-        same_game == game
-        num_times_called.should == 0
-
-        same_game == different_game
-        num_times_called.should == 1
-      end
-    end
-
-    describe '#eql?' do
-      it 'should be eql if games have the same url' do
         game.eql?(same_game).should be_true
         game.eql?(different_game).should_not be_true
-      end
-
-      it 'should be eql if games have the same url and contents' do
-        game.stub(:contents)      { 'Slow Riot for New Zero Kanada' }
-        same_game.stub(:contents) { 'Slow Riot for New Zero Kanada' }
-
-        game.eql?(same_game).should be_true
       end
     end
 
     describe '#hash' do
-      it 'should hash two games to the same value if they have the same contents, regardless of url' do
-        game.stub(:contents) { '20 Minutes / 40 Years' }
-        same_game.stub(:contents) { 'Wavering Radiant' }
-        different_game.stub(:contents) { '20 Minutes / 40 Years' }
-
-        game.hash.should == different_game.hash
-        game.hash.should_not == same_game.hash
+      it 'should hash two games to the same value if they have the same url' do
+        game.hash.should == same_game.hash
+        game.hash.should_not == different_game.hash
       end
     end
   end

@@ -4,8 +4,6 @@ require 'bundler/setup'
 require 'logger'
 require 'fileutils'
 require 'twitter'
-require 'json'
-require 'digest/md5'
 
 require 'player'
 require 'game'

@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-#this test actually posts to a twitter account (@twnbtest).  for this reason, it is not
-#included as part of the test suite.  it's intended to be used a sanity check to see if
-#NethackBot will work on your system (necessary binaries are in the right place, it has
-#adequate permissions, etc).
+#this test actually posts to a twitter account.  for this reason, it is not included
+#as part of the test suite.  it's intended to be used a sanity check to see if NethackBot
+#will work on your system (necessary binaries are in the right place, it has adequate
+#permissions, etc).
 
-#note that due to twitter's de-duping algorithm you won't be able to run this script
+#note that due to twitter's de-duping algorithm you won't be able to run this script 
 #repeatedly without a lengthy wait in between invocations.
 
 describe NethackBot do

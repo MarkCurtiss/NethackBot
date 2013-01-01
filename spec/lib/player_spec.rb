@@ -42,22 +42,8 @@ describe Player do
       test_player.newGames.size.should == 2
     end
 
-    it 'should recognize a duplicate when a game has the same contents but a new updated url' do
-      old_game = Game.new('http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170828.nh343.txt')
-      old_game.stub(:contents) { 'Old Man Gloom' }
-
-      current_game = Game.new('http://achewood.com')
-      current_game.stub(:contents) { 'Old Man Gloom' }
-
-      test_player.serializeGame(old_game)
-      test_player.stub(:current_games) { [current_game] }
-
-      test_player.newGames.size.should == 0
-    end
-
     it 'should handle players with a large number of games without dying due to an edge case in open-uri' do
       prolific_player = Player.new('graa')
-
       lambda {
         prolific_player.newGames
       }.should_not raise_error
@@ -65,12 +51,12 @@ describe Player do
   end
 
   describe '#serializeGame' do
-    it "should write the url and hash id for the game to the player's gamesFile" do
+    it "should write the url for the game to the player's gamesFile" do
       game = test_player.newGames[1]
       test_player.serializeGame(game)
 
       games_on_disk = File.open(test_player.gamesFile).gets
-      games_on_disk.should == { :url => game.url, :id => game.id }.to_json + "\n"
+      games_on_disk.should eql "http://alt.org/nethack/userdata/n/nbTest/dumplog/1263170714.nh343.txt\n"
     end
   end
 
