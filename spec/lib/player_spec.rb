@@ -12,7 +12,7 @@ describe Player do
 
   describe '#url' do
     it "returns the URL where that player's games can be found" do
-      test_player.url.should eql 'http://alt.org/nethack/dumplogs.php?player=nbTest',
+      test_player.url.should eql 'http://alt.org/nethack/dumplogs.php?player=nbTest'
     end
   end
 
