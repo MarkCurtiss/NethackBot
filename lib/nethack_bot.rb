@@ -26,7 +26,7 @@ class NethackBot
       self.send("#{attribute}=", values) if self.respond_to?("#{attribute}")
     }
 
-    @players = [ @players ].flatten #convert string to an array in case we only have one player
+    @players = Array(@players)
     @players.map! { |playerName| Player.new(playerName) }
 
     @logger = Logger.new(@@logName, 'daily')
